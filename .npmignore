@@ -1,0 +1,10 @@
+src/
+tsconfig.json
+node_modules/
+vite.config.ts
+.npmignore
+.prettierrc.json
+index.html
+package-lock.json
+dist/utils/
+dist/main.d.ts

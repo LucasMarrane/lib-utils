@@ -1,0 +1,60 @@
+{
+    "name": "@marrsys/utils",
+    "version": "1.0.0",
+    "description": "Suite of utilities for application development",
+    "license": "MIT",
+    "author": {
+        "name": "Lucas Marrane Siler",
+        "email": "lucasmarrane@gmail.com"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/LucasMarrane/lib-utils.git"
+    },
+    "type": "module",
+    "main": "dist/index.es.js",
+    "module": "dist/index.es.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build && npx dts-bundle --name @marrys/utils --main dist/main.d.ts --out index.d.ts ",
+        "preview": "vite preview"
+    },
+    "devDependencies": {
+        "typescript": "~5.6.2",
+        "vite": "^6.0.5",
+        "vite-plugin-dts": "^4.4.0"
+    },
+    "files": [
+        "dist"
+    ],
+    "exports": {
+        ".": "./dist/index.es.js"       
+    },
+    "dependencies": {
+        "dexie": "^4.0.10",
+        "fflate": "^0.8.2",
+        "reflect-metadata": "^0.2.2"
+    },
+    "peerDependencies": {
+        "axios": "^1.7.9",
+        "dexie": "^4.0.10",
+        "fflate": "^0.8.2",
+        "reflect-metadata": "^0.2.2"
+    },
+    "keywords": [
+      "object2object",
+      "mapper",
+      "ts",
+      "object-mapper",
+      "mapper-utils",
+      "Dependency Injection",
+      "Indexed DB",
+      "HttpClient",
+      "File Download",
+      "Logger",
+      "utility classes",
+      "application development"
+
+  ]
+}
