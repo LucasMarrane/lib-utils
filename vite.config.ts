@@ -7,9 +7,8 @@ export default defineConfig({
         lib: {
             entry: 'src/main.ts',
             name: '@marrsys/utils',
-            fileName: (format) => `index.${format}.js`,
+            fileName: (format) => `index.js`,
             formats: ['es'],
-            // formats: ['es', 'umd', 'system'],
         },
         rollupOptions:{
           external: ['reflect-metadata', 'axios', 'fflate', 'dexie']

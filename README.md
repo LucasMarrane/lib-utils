@@ -1,15 +1,15 @@
 # @marrsys/utils
 
+## 🚧 Under Construction 🚧
+
 ## Overview
-A comprehensive utility library providing various helper functions, decorators, and services for JavaScript/TypeScript applications.
+A comprehensive utility library providing various helper functions, decorators, and services for typescript/TypeScript applications.
 
 ## Installation
 
 ```shell
 $ npm i @marrsys/utils
 ```
-
-# @marrsys/utils Library Documentation
 
 ## Table of Contents
 1. [Overview](#overview)
@@ -46,37 +46,15 @@ UUID generation and handling utilities.
 ### DependencyInjection
 Service for managing dependency injection in applications.
 
-```typescript
-@DependencyInjection({
-    serviceName: 'MyService',
-    isSingleton: true
-})
-class MyService {
-    constructor(@DependencyInjection.Inject() dependency: Dependency) {}
-}
-```
-
 ### HttpClient
 HTTP client service for making API requests.
 
 ### Logger
 Logging service with configurable log levels.
 
-```typescript
-enum LogLevel {
-    DEBUG,
-    INFO,
-    WARN,
-    ERROR
-}
-
-const logger = Utils.Logger;
-logger.log(LogLevel.INFO, "Operation completed");
-```
-
 ## Extensions
 
-The Extensions class provides browser extensions and polyfills:
+The Extensions class provides browser extensions:
 
 ```typescript
 class Extensions {
@@ -108,81 +86,16 @@ Utils.Extensions
 ## Caching System
 
 ### ClientCache
-Singleton class for client-side caching:
-
-```typescript
-interface ICacheContainer {
-    get: <T extends {}>(key: string) => MaybePromise<T>;
-    set: (key: string, value: any) => MaybePromise<void>;
-    has: (key: string) => MaybePromise<boolean>;
-    delete: (key: string) => MaybePromise<boolean>;
-    clear: () => MaybePromise<void>;
-}
-
-class ClientCache {
-    static getInstance(): ClientCache;
-    set(key: string, value: any): void;
-    get<T extends {}>(key: string): T;
-    has(key: string): MaybePromise<boolean>;
-    delete(key: string): MaybePromise<boolean>;
-    clear(): void;
-    set cacheContainer(container: ICacheContainer);
-}
-
-// Usage
-const cache = Utils.ClientCache.getInstance();
-cache.set('key', { data: 'value' });
-const value = cache.get<{ data: string }>('key');
-```
+Singleton class for client-side caching
 
 ## Decorators
 
 ### @SetCacheName
-Decorator for setting cache names:
-
-```typescript
-interface IAditionalInformationBase {
-    prefix?: string;
-    sufix?: string;
-}
-
-function SetCacheName<T extends {}>(
-    name?: string, 
-    aditionalInformation?: T extends IAditionalInformationBase ? T : {}
-): (target: ConstructorType) => any;
-
-// Usage
-@SetCacheName('UserCache', { prefix: 'app' })
-class UserService {}
-```
+Decorator for setting cache names
 
 ### @FetchCache
-Decorator for caching fetch results:
+Decorator for caching fetch results
 
-```typescript
-interface IFetchCache {
-    key?: string;
-    ttl?: number;
-}
-
-interface ICacheItem extends Required<IFetchCache> {
-    data: any;
-    endpoint: string;
-    fetchedAt: Date;
-    size: number;
-    performedTime: number;
-    staleIn: Date;
-    params: any;
-}
-
-// Usage
-class ApiService {
-    @FetchCache({ ttl: 3600 }) // Cache for 1 hour
-    async fetchData(id: string) {
-        // Fetch implementation
-    }
-}
-```
 
 ## Mapper
 
@@ -191,125 +104,68 @@ The Mapper utility provides object transformation capabilities.
 ### Basic Usage
 
 ```typescript
-// Define interfaces
-interface UserDTO {
-    user_id: number;
-    first_name: string;
-    last_name: string;
-    email_address: string;
+import { MapperUtils } from "@marrsys/utils";
+
+interface IUser {
+  name: string;
+  surname: string;
+  age: number;
 }
 
-interface UserModel {
-    id: number;
-    firstName: string;
-    lastName: string;
-    email: string;
-    fullName: string;
+interface IData {
+  fullname: string;
+  isUnderEigthteen: boolean;
 }
 
-// Create mapper class
-@DependencyInjection({
-    serviceName: 'UserMapper',
-    isSingleton: true
-})
-class UserMapper {
-    private mapper: typeof Utils.Mapper;
-
-    constructor() {
-        this.mapper = Utils.Mapper;
-        
-        // Define mapping
-        this.mapper.createMap<UserDTO, UserModel>('UserDTO', 'UserModel')
-            .forMember('id', src => src.user_id)
-            .forMember('firstName', src => src.first_name)
-            .forMember('lastName', src => src.last_name)
-            .forMember('email', src => src.email_address)
-            .forMember('fullName', src => 
-                `${src.first_name} ${src.last_name}`);
-    }
-
-    mapUser(dto: UserDTO): UserModel {
-        return this.mapper.map<UserDTO, UserModel>('UserDTO', 'UserModel', dto);
-    }
-
-    mapUsers(dtos: UserDTO[]): UserModel[] {
-        return this.mapper.mapArray<UserDTO, UserModel>(
-            'UserDTO', 
-            'UserModel', 
-            dtos
-        );
-    }
-}
+const user: IUser = {
+  age: 24,
+  name: "Lucas",
+  surname: "Marrane Siler",
+};
 ```
 
-### Nested Mapping
+#### CreateMap
 
 ```typescript
-interface AddressDTO {
-    street_name: string;
-    city_name: string;
-}
+...
 
-interface AddressModel {
-    street: string;
-    city: string;
-}
+/
+const _mapperFromEnd = MapperUtils.Mapper.createMap<IUser, IData>()
+    .forField('fullname', (from) => `${from?.name} ${from?.surname}`)
+    .forField('isUnderEigthteen', (from) => <number>from?.age < 18)
+    .map(user);
 
-interface UserWithAddressDTO extends UserDTO {
-    address: AddressDTO;
-}
+console.log(_mapperFromEnd); //{ fullname: 'Lucas Marrane Siler', isUnderEigthteen: false }
 
-interface UserWithAddressModel extends UserModel {
-    address: AddressModel;
-}
 
-// Address mapping
-mapper.createMap<AddressDTO, AddressModel>('AddressDTO', 'AddressModel')
-    .forMember('street', src => src.street_name)
-    .forMember('city', src => src.city_name);
+const _mapperFromStart = MapperUtils.Mapper<IUser, IData>(user)
+    .forField('fullname', (from) => `${from?.name} ${from?.surname}`)
+    .forField('isUnderEigthteen', (from) => <number>from?.age < 18)
+    .map();
 
-// User with address mapping
-mapper.createMap<UserWithAddressDTO, UserWithAddressModel>(
-    'UserWithAddressDTO', 
-    'UserWithAddressModel'
-)
-    .forMember('id', src => src.user_id)
-    .forMember('address', src => 
-        mapper.map<AddressDTO, AddressModel>(
-            'AddressDTO', 
-            'AddressModel', 
-            src.address
-        )
-    );
+console.log(_mapperFromStart); //{ fullname: 'Lucas Marrane Siler', isUnderEigthteen: false }
+
 ```
 
-### Best Practices
+#### CreateMap for complex objects
 
-1. **Type Safety**
-   - Always define interfaces for source and destination types
-   - Use TypeScript generics when creating maps
-   - Validate input data before mapping
+```typescript
+...
 
-2. **Organization**
-   - Group related mappings in dedicated mapper classes
-   - Use dependency injection for mapper instances
-   - Keep mapping definitions in constructor
+interface IComplex {
+    user: IUser
+}
 
-3. **Error Handling**
-   - Provide default values where appropriate
-   - Handle null/undefined cases explicitly
-   - Add proper type checks
+const ComplexObject = MapperUtils.Mapper<IUser, IComplex>()
+    .forField<IUser>('user', (from) => ({age: from?.age, name:from?.name , surname: from?.surname}))
+    .map(user);
 
-4. **Performance**
-   - Create mapping definitions once at startup
-   - Reuse mapper instances through dependency injection
-   - Consider caching for frequently mapped objects
+//or
+const ComplexObject = MapperUtils.Mapper<IUser, IComplex>()
+    .forField('user.age', (from) =>  from?.age)
+    .forField('user.name', (from) =>  from?.name)
+    .forField('user.surname', (from) =>  from?.surname)
+    .map(user);
 
-## General Notes
 
-- All cache operations support both sync and async implementations
-- FetchCache decorator only works with async methods
-- Extensions modify native object prototypes globally
-- DependencyInjection system supports constructor parameter resolution
-- Mapper is designed to be used as a singleton service
-- All services support TypeScript type definitions
+```

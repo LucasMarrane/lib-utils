@@ -1,6 +1,6 @@
 import { DependencyInjectionContainer } from "./Container";
 
-export class DependencyInjection {
+export class DependencyInjectionBootstraper {
     static bootstrap(callback: (services: typeof DependencyInjectionContainer) => void) {
         callback(DependencyInjectionContainer);
         return this;
